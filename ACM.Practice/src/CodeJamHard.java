@@ -179,6 +179,6 @@ public class CodeJamHard {
 		Scanner scin = new Scanner(System.in);
 		int numCases = scin.nextInt();	scin.nextLine();
 		CodeJamHard meat = new CodeJamHard("welcome to code jam", true);
-		meat.solveCases(numCases, scin, 'B');
+		meat.solveCases(numCases, scin, 'B'); 
 	}
 }
