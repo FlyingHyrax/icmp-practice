@@ -19,6 +19,7 @@ public class Ping {
 				solveCase(line);
 			}
 		}
+		scin.close();
 	}
 	
 	private static void solveCase(String line) {

@@ -22,6 +22,7 @@ public class ProbA {
 			}
 		}
 		
+		in.close();
 	}
 	
 	private static double solve(double e, double r)

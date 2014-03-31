@@ -49,6 +49,7 @@ public class ProbE {
 				System.out.printf("%s %2.1f%%%n", winningTeam, winningPercent);
 			}
 		}
+		scin.close();
 	}
 }
 

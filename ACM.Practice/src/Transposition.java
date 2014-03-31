@@ -24,6 +24,8 @@ public class Transposition {
 				transpose(noteTokens, shift);
 			}
 		}
+		
+		scin.close();
 	}
 	
 	private static void transpose(String[] noteInput, int shift) {
