@@ -171,7 +171,7 @@ public class AllYourBase {
 	static int lowestBase(String s) {
 		int max = 2;
 		for (int i = 0; i < s.length(); ++i) {
-			int n = find(s.charAt(i));
+			int n = find(s.charAt(i)) + 1;
 			if (n > max) {
 				max = n;
 			}
