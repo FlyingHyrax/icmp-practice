@@ -1,3 +1,7 @@
+.settings/
+test-cases/
+bin/
+
 *.class
 
 # Package Files #
