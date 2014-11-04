@@ -1,4 +1,4 @@
-package icpc2014;
+package regional2013;
 import java.util.*;
 /**
  * MidAtl 2013 Problem E: "Ping!"
