@@ -6,17 +6,25 @@ import java.util.*;
  * ICPC MidAtl Regional 2014
  * Problem D - "Everything in Excess!"
  * 
- * Definitely mixed up and backwards about where to use sqrt(n).
- * There are primes sqrt(10,000,000)..10,000,000.
- * But in trial division we only want to use divisors up to sqrt(n)
- * So do we ever need to generate a prime > sqrt(10,000,000) ?
+ * Finally figured out why nothing seemed to work in the sieve - I tried to stick the .add()
+ * (to add prime indices to the list of primes) inside the for-loop that marks the composite indices,
+ * but that outer loop never iterates over the entire marker array!  So the primes were marked correctly,
+ * but I wasn't adding all of them... 
  * 
- * Not the fastest - does 2..10,000,000 in ~19 seconds
+ * 2..10000000 in ~18 seconds
  */
 public class ProblemD {
 
+	/* this is the highest input we can possibly receive */
 	private static final int BIGGEST_N = 10000000;
-	private static final List<Integer> PRIMES = getPrimes(BIGGEST_N);
+	
+	/* The last possible prime factor of N is P_i, where (P_i+1)^2 > N That is, no prime > sqrt(N) 
+	 * is a factor of N, because the largest possible prime factor would be P = sqrt(N) or P^2 = N 
+	 * So when we pre-compute primes, don't compute a prime larger than the square root of our maximum */
+	private static final int PRIME_CEILING = (int) Math.ceil(Math.sqrt(BIGGEST_N));
+	
+	/* getPrimes will return every prime <= it's argument */
+	private static final List<Integer> PRIMES = getPrimes(PRIME_CEILING);
 	
 	public static void main(String[] args) {
 		/*
@@ -80,8 +88,17 @@ public class ProblemD {
 		List<Integer> factors = new ArrayList<>();
 		
 		int prime_idx = 0;
-		while (number > 1 && prime_idx < PRIMES.size()) {
-			int prime = PRIMES.get(prime_idx);
+		int prime = 0; // cheat on initialization
+		int stop = (int) Math.ceil(Math.sqrt(number));
+		
+		/* The only one of these rules I am sure about is #1)
+		 * 1) Main condition: If 'number' == 1, then we have divided out all of it's factors
+		 * 2) Short-circuit: If the current prime (the prime at prime_idx) is > sqrt(number),
+		 *   then no larger prime can possibly be a factor of 'number', so 'number' is primes
+		 * 3) Safety-check: We have completely run out of factors to check; 'number' is prime
+		 */
+		while (number > 1 && prime < stop && prime_idx < PRIMES.size()) {
+			prime = PRIMES.get(prime_idx);
 			
 			while (number % prime == 0) {
 				number = number / prime;
@@ -96,28 +113,39 @@ public class ProblemD {
 	
 	/**
 	 * Finds all prime numbers below a maximum using the Sieve of Eratosthenes
+	 * ftp://ftp.cs.wisc.edu/pub/techreports/1990/TR909.pdf
 	 * @param n ceiling for primes - must be <= INT_MAXVALUE
 	 * @return a List of prime integers less than n
 	 */
 	private static List<Integer> getPrimes(int n) {
+		// list to hold the prime integers we find
 		List<Integer> primes = new ArrayList<Integer>();
+		// markers - if (sieve[i]) then i is prime
 		boolean[] sieve = new boolean[n+1];
 		
-		// initially assume all numbers are prime
+		// initially assume all numbers are prime except 0 and 1
 		for (int i = 2; i < sieve.length; i += 1) sieve[i] = true;
 
-		// only need to consider values up to sqrt(n) ?
-		int top = (int) Math.ceil(Math.sqrt(n));
-		
-		for (int p = 2; p <= top; p += 1) {
+		/* iteration max - NOT the largest possible prime, but when marking composites 
+		 * formed by multiplying primes less than this, we will naturally eliminate the 
+		 * non-primes between sqrt(n) and n; the first composite after p that hasn't 
+		 * already been marked previously is p^2 */
+		int stop = (int) Math.ceil(Math.sqrt(n));
+		for (int p = 2; p <= stop; p += 1) {
 			// when we reach a prime...
 			if (sieve[p]) {
-				// ...add it to the result list
-				primes.add(p);
-				// ...and mark all of it's multiples as composite
+				// mark all of it's multiples as composite
 				for (int i = p; i <= n / p; i += 1) {
 					sieve[i * p] = false;
 				}
+			}
+		}
+		
+		// now go over the marker array and add all the prime indices to a list
+		// (we need a separate for loop b/c the main sieve loop never hits the entire marker array) 
+		for (int i = 2; i < sieve.length; i += 1) {
+			if (sieve[i]) {
+				primes.add(i);
 			}
 		}
 		
